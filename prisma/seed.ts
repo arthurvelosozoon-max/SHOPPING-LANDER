@@ -7,17 +7,24 @@ const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-  const adminPasswordHash = await bcrypt.hash("Oli@@2026", 10);
-  await prisma.user.upsert({
-    where: { email: "arthurveloso1225@gmail.com" },
-    update: { password: adminPasswordHash, role: "ADMIN" },
-    create: {
-      name: "Arthur Veloso",
-      email: "arthurveloso1225@gmail.com",
-      password: adminPasswordHash,
-      role: "ADMIN",
-    },
-  });
+  const admins = [
+    { name: "Arthur Veloso", email: "arthurveloso1225@gmail.com", password: "Oli@@2026" },
+    { name: "Luiz Marques", email: "luizhmarques26@yahoo.com", password: "shopping@2025" },
+  ];
+
+  for (const admin of admins) {
+    const passwordHash = await bcrypt.hash(admin.password, 10);
+    await prisma.user.upsert({
+      where: { email: admin.email },
+      update: { password: passwordHash, role: "ADMIN" },
+      create: {
+        name: admin.name,
+        email: admin.email,
+        password: passwordHash,
+        role: "ADMIN",
+      },
+    });
+  }
 
   const categories = await Promise.all(
     [
