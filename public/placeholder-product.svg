@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#111113"/>
+  <rect x="1" y="1" width="398" height="398" fill="none" stroke="#e10600" stroke-opacity="0.3" stroke-width="2"/>
+  <circle cx="200" cy="170" r="60" fill="none" stroke="#e10600" stroke-width="4" stroke-opacity="0.6"/>
+  <path d="M170 170 L195 195 L235 145" stroke="#e10600" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+  <text x="200" y="280" font-family="Arial, sans-serif" font-size="20" font-weight="900" fill="#c9ccd1" text-anchor="middle" letter-spacing="2">SHOPPING LANDER</text>
+</svg>
