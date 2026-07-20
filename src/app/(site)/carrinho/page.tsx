@@ -3,15 +3,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import { useCart } from "@/components/cart/cart-provider";
+import { CheckoutModal } from "@/components/cart/checkout-modal";
 import { formatCurrency } from "@/lib/format";
 
 export default function CartPage() {
-  const { items, updateQuantity, removeItem, subtotal, clearCart } = useCart();
-  const [coupon, setCoupon] = useState("");
-  const shipping = items.length > 0 ? 24.9 : 0;
-  const total = subtotal + shipping;
+  const { items, updateQuantity, removeItem, subtotal, totalItems, clearCart } = useCart();
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   if (items.length === 0) {
     return (
@@ -71,46 +70,49 @@ export default function CartPage() {
               </div>
             </div>
           ))}
-          <button onClick={clearCart} className="text-sm text-white/40 hover:text-sl-red">
-            Limpar carrinho
-          </button>
+
+          <div className="flex items-center justify-between pt-2">
+            <Link
+              href="/produtos"
+              className="text-sm font-bold text-white/70 hover:text-sl-red"
+            >
+              ← Continuar comprando
+            </Link>
+            <button onClick={clearCart} className="text-sm text-white/40 hover:text-sl-red">
+              Limpar carrinho
+            </button>
+          </div>
         </div>
 
         <div className="sl-card h-fit space-y-4 rounded-xl p-6">
           <h2 className="text-lg font-bold text-white">Resumo do Pedido</h2>
 
-          <div className="flex gap-2">
-            <input
-              value={coupon}
-              onChange={(e) => setCoupon(e.target.value)}
-              placeholder="Cupom de desconto"
-              className="w-full rounded-md border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-sl-red"
-            />
-            <button className="rounded-md border border-white/20 px-4 text-sm font-bold text-white hover:border-sl-red hover:text-sl-red">
-              Aplicar
-            </button>
-          </div>
-
           <div className="space-y-2 border-t border-white/10 pt-4 text-sm">
             <div className="flex justify-between text-white/70">
-              <span>Subtotal</span>
+              <span>Itens ({totalItems})</span>
               <span>{formatCurrency(subtotal)}</span>
-            </div>
-            <div className="flex justify-between text-white/70">
-              <span>Frete</span>
-              <span>{formatCurrency(shipping)}</span>
             </div>
             <div className="flex justify-between border-t border-white/10 pt-2 text-base font-bold text-white">
               <span>Total</span>
-              <span className="text-sl-red">{formatCurrency(total)}</span>
+              <span className="text-sl-red">{formatCurrency(subtotal)}</span>
             </div>
           </div>
 
-          <button className="w-full rounded-lg bg-sl-red py-3 font-bold text-white transition hover:bg-sl-red-glow sl-red-glow">
+          <p className="text-xs text-white/40">
+            Frete e prazo de entrega são combinados diretamente pelo WhatsApp após o pedido.
+          </p>
+
+          <button
+            onClick={() => setCheckoutOpen(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-sl-red py-3 font-bold text-white transition hover:bg-sl-red-glow sl-red-glow"
+          >
+            <ShoppingBag size={18} />
             Finalizar Compra
           </button>
         </div>
       </div>
+
+      <CheckoutModal open={checkoutOpen} onClose={() => setCheckoutOpen(false)} />
     </div>
   );
 }

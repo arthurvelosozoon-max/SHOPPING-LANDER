@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Heart } from "lucide-react";
 import { formatCurrency, discountPercent } from "@/lib/format";
 import { useCart } from "@/components/cart/cart-provider";
+import { useFavorites } from "@/components/favorites/favorites-provider";
 
 export type ProductCardData = {
   id: string;
@@ -17,8 +18,10 @@ export type ProductCardData = {
 
 export function ProductCard({ product }: { product: ProductCardData }) {
   const { addItem } = useCart();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const discount = discountPercent(product.price, product.salePrice);
   const finalPrice = product.salePrice ?? product.price;
+  const favorited = isFavorite(product.id);
 
   return (
     <div className="group sl-card relative flex flex-col overflow-hidden rounded-xl transition hover:border-sl-red/50">
@@ -27,6 +30,24 @@ export function ProductCard({ product }: { product: ProductCardData }) {
           -{discount}%
         </span>
       )}
+      <button
+        onClick={() =>
+          toggleFavorite({
+            productId: product.id,
+            slug: product.slug,
+            name: product.name,
+            price: product.price,
+            salePrice: product.salePrice,
+            image: product.image,
+          })
+        }
+        className={`absolute right-3 top-3 z-10 rounded-full p-2 backdrop-blur transition ${
+          favorited ? "bg-sl-red text-white" : "bg-black/40 text-white/80 hover:text-sl-red"
+        }`}
+        aria-label={favorited ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+      >
+        <Heart size={16} fill={favorited ? "currentColor" : "none"} />
+      </button>
       <Link href={`/produtos/${product.slug}`} className="relative aspect-square overflow-hidden bg-white/5">
         <Image
           src={product.image}

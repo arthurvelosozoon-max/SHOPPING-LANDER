@@ -43,7 +43,7 @@ export default async function Home() {
         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 sm:grid-cols-3 lg:px-8">
           <div className="flex items-center gap-3">
             <Truck className="text-sl-red" />
-            <span className="text-sm text-white/70">Frete rápido para todo o Brasil</span>
+            <span className="text-sm text-white/70">Entregamos em todo o Brasil e Paraguai</span>
           </div>
           <div className="flex items-center gap-3">
             <ShieldCheck className="text-sl-red" />

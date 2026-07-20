@@ -74,6 +74,7 @@ export default async function ProductDetailPage({
                 slug: product.slug,
                 name: product.name,
                 price: finalPrice,
+                salePrice: product.salePrice,
                 image: product.images[0]?.url ?? "/placeholder-product.svg",
               }}
               disabled={product.stock <= 0}

@@ -11,6 +11,9 @@ export function Footer() {
             Alta performance em cada compra. Suplementos, moda fitness, acessórios e eletrônicos
             com curadoria premium.
           </p>
+          <p className="mt-3 text-sm font-bold text-sl-red">
+            Entregamos em todo o Brasil 🇧🇷 e Paraguai 🇵🇾
+          </p>
         </div>
 
         <div>

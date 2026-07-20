@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Search, ShoppingCart, Heart, User, Menu, X } from "lucide-react";
 import { Logo } from "./logo";
 import { useCart } from "@/components/cart/cart-provider";
+import { useFavorites } from "@/components/favorites/favorites-provider";
 
 const NAV_LINKS = [
   { label: "Produtos", href: "/produtos" },
@@ -14,6 +15,7 @@ const NAV_LINKS = [
 
 export function Header({ categories }: { categories: { name: string; slug: string }[] }) {
   const { totalItems, openCart } = useCart();
+  const { totalItems: totalFavorites } = useFavorites();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -67,8 +69,13 @@ export function Header({ categories }: { categories: { name: string; slug: strin
         </div>
 
         <div className="ml-auto flex items-center gap-4 lg:ml-4">
-          <Link href="/favoritos" className="hidden sm:block text-white/80 hover:text-sl-red">
+          <Link href="/favoritos" className="relative hidden sm:block text-white/80 hover:text-sl-red">
             <Heart size={22} />
+            {totalFavorites > 0 && (
+              <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-sl-red text-[10px] font-bold text-white">
+                {totalFavorites}
+              </span>
+            )}
           </Link>
           <Link href="/conta" className="hidden sm:block text-white/80 hover:text-sl-red">
             <User size={22} />
