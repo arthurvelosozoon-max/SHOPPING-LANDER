@@ -4,6 +4,7 @@ import { getProductBySlug, getRelatedProducts } from "@/lib/data";
 import { formatCurrency, discountPercent } from "@/lib/format";
 import { ProductCard } from "@/components/product/product-card";
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
+import { RequestQuoteButton } from "@/components/product/request-quote-button";
 
 export default async function ProductDetailPage({
   params,
@@ -79,6 +80,10 @@ export default async function ProductDetailPage({
               }}
               disabled={product.stock <= 0}
             />
+          </div>
+
+          <div className="mt-4">
+            <RequestQuoteButton productName={product.name} />
           </div>
 
           <dl className="mt-10 grid grid-cols-2 gap-4 border-t border-white/10 pt-6 text-sm">

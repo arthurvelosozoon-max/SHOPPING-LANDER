@@ -99,3 +99,21 @@ export function sendToWhatsapp(order: OrderInput) {
   const url = buildWhatsappUrl(message);
   window.open(url, "_blank");
 }
+
+export function generateQuoteMessage(productName: string) {
+  return [
+    "💬 *SOLICITAÇÃO DE ORÇAMENTO*",
+    "",
+    "Olá! Gostaria de solicitar um orçamento para o produto:",
+    "",
+    `📦 ${productName}`,
+    "",
+    "Aguardo o retorno, obrigado!",
+  ].join("\n");
+}
+
+export function requestQuoteOnWhatsapp(productName: string) {
+  const message = generateQuoteMessage(productName);
+  const url = buildWhatsappUrl(message);
+  window.open(url, "_blank");
+}

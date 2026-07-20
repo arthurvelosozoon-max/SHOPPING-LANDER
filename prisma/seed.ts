@@ -1,10 +1,24 @@
+import "dotenv/config";
+import bcrypt from "bcryptjs";
 import { PrismaClient } from "../src/generated/prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const adapter = new PrismaBetterSqlite3({ url: "file:./dev.db" });
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
+  const adminPasswordHash = await bcrypt.hash("Oli@@2026", 10);
+  await prisma.user.upsert({
+    where: { email: "arthurveloso1225@gmail.com" },
+    update: { password: adminPasswordHash, role: "ADMIN" },
+    create: {
+      name: "Arthur Veloso",
+      email: "arthurveloso1225@gmail.com",
+      password: adminPasswordHash,
+      role: "ADMIN",
+    },
+  });
+
   const categories = await Promise.all(
     [
       { name: "Suplementos", slug: "suplementos" },
