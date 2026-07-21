@@ -141,6 +141,7 @@ export async function createOrder(
   revalidatePath("/admin/pedidos");
   revalidatePath("/admin");
   revalidatePath("/admin/estoque");
+  revalidatePath("/admin/clientes");
   revalidatePath("/produtos");
   redirect("/admin/pedidos");
 }
@@ -207,6 +208,7 @@ export async function updateOrder(
   revalidatePath("/admin/pedidos");
   revalidatePath("/admin");
   revalidatePath("/admin/estoque");
+  revalidatePath("/admin/clientes");
   revalidatePath("/produtos");
   redirect("/admin/pedidos");
 }
@@ -229,5 +231,6 @@ export async function deleteOrder(orderId: string) {
   revalidatePath("/admin/pedidos");
   revalidatePath("/admin");
   revalidatePath("/admin/estoque");
+  revalidatePath("/admin/clientes");
   revalidatePath("/produtos");
 }

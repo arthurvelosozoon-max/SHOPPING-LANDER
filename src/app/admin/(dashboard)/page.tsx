@@ -2,6 +2,20 @@ import { prisma } from "@/lib/prisma";
 import { formatCurrency } from "@/lib/format";
 import { Package, ShoppingBag, AlertTriangle, DollarSign } from "lucide-react";
 
+const STATUS_LABEL: Record<string, string> = {
+  PENDING: "Recebido",
+  PAID: "Pago",
+  PACKING: "Separando",
+  SHIPPED: "Enviado",
+  COMPLETED: "Entregue",
+  CANCELLED: "Cancelado",
+  REFUNDED: "Reembolso",
+};
+
+// Revenue only counts orders that have actually been paid — PENDING orders
+// haven't been paid yet, and CANCELLED/REFUNDED shouldn't count as revenue.
+const PAID_ONWARD_STATUSES = ["PAID", "PACKING", "SHIPPED", "COMPLETED"] as const;
+
 export default async function AdminDashboard() {
   const [productCount, orderCount, allProducts, orders] = await Promise.all([
     prisma.product.count(),
@@ -11,7 +25,10 @@ export default async function AdminDashboard() {
   ]);
 
   const lowStockCount = allProducts.filter((p) => p.stock <= p.minStock).length;
-  const revenue = await prisma.order.aggregate({ _sum: { total: true } });
+  const revenue = await prisma.order.aggregate({
+    _sum: { total: true },
+    where: { status: { in: [...PAID_ONWARD_STATUSES] } },
+  });
 
   const cards = [
     { label: "Produtos", value: productCount, icon: Package },
@@ -53,7 +70,7 @@ export default async function AdminDashboard() {
               {orders.map((o) => (
                 <tr key={o.id} className="border-b border-white/5 text-white/80">
                   <td className="py-2">{o.customerName}</td>
-                  <td className="py-2">{o.status}</td>
+                  <td className="py-2">{STATUS_LABEL[o.status] ?? o.status}</td>
                   <td className="py-2 text-right">{formatCurrency(o.total)}</td>
                 </tr>
               ))}

@@ -80,6 +80,7 @@ export async function createProduct(
 
   revalidatePath("/admin/produtos");
   revalidatePath("/produtos");
+  revalidatePath("/");
   redirect("/admin/produtos");
 }
 
@@ -109,6 +110,7 @@ export async function updateProduct(
 
   revalidatePath("/admin/produtos");
   revalidatePath("/produtos");
+  revalidatePath("/");
   redirect("/admin/produtos");
 }
 
@@ -120,4 +122,5 @@ export async function deleteProduct(productId: string) {
   }
   revalidatePath("/admin/produtos");
   revalidatePath("/produtos");
+  revalidatePath("/");
 }
