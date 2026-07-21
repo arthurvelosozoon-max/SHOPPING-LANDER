@@ -2,6 +2,7 @@ import Link from "next/link";
 import {
   LayoutDashboard,
   Package,
+  Tags,
   ShoppingBag,
   Boxes,
   Ticket,
@@ -14,6 +15,7 @@ import { logoutAction } from "../login/actions";
 const NAV = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Produtos", href: "/admin/produtos", icon: Package },
+  { label: "Categorias", href: "/admin/categorias", icon: Tags },
   { label: "Pedidos", href: "/admin/pedidos", icon: ShoppingBag },
   { label: "Estoque", href: "/admin/estoque", icon: Boxes },
   { label: "Cupons", href: "/admin/cupons", icon: Ticket },

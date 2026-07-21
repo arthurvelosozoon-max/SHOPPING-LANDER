@@ -1,7 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Plus, Pencil } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatCurrency } from "@/lib/format";
+import { DeleteIconButton } from "@/components/admin/delete-icon-button";
+import { deleteProduct } from "./actions";
 
 export default async function AdminProductsPage() {
   const products = await prisma.product.findMany({
@@ -13,9 +16,12 @@ export default async function AdminProductsPage() {
     <div>
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-black text-white">Produtos</h1>
-        <button className="flex items-center gap-2 rounded-lg bg-sl-red px-4 py-2 text-sm font-bold text-white hover:bg-sl-red-glow">
+        <Link
+          href="/admin/produtos/novo"
+          className="flex items-center gap-2 rounded-lg bg-sl-red px-4 py-2 text-sm font-bold text-white hover:bg-sl-red-glow"
+        >
           <Plus size={16} /> Novo Produto
-        </button>
+        </Link>
       </div>
 
       <div className="sl-card overflow-x-auto rounded-xl">
@@ -32,6 +38,13 @@ export default async function AdminProductsPage() {
             </tr>
           </thead>
           <tbody>
+            {products.length === 0 && (
+              <tr>
+                <td colSpan={7} className="p-8 text-center text-white/40">
+                  Nenhum produto cadastrado ainda.
+                </td>
+              </tr>
+            )}
             {products.map((p) => (
               <tr key={p.id} className="border-b border-white/5 text-white/80">
                 <td className="flex items-center gap-3 p-4">
@@ -62,10 +75,20 @@ export default async function AdminProductsPage() {
                     {p.active ? "Ativo" : "Inativo"}
                   </span>
                 </td>
-                <td className="p-4 text-right">
-                  <button className="text-white/50 hover:text-sl-red">
-                    <Pencil size={16} />
-                  </button>
+                <td className="p-4">
+                  <div className="flex items-center justify-end gap-3">
+                    <Link
+                      href={`/admin/produtos/${p.id}/editar`}
+                      className="text-white/50 hover:text-sl-red"
+                      aria-label="Editar"
+                    >
+                      <Pencil size={16} />
+                    </Link>
+                    <DeleteIconButton
+                      itemName={p.name}
+                      action={deleteProduct.bind(null, p.id)}
+                    />
+                  </div>
                 </td>
               </tr>
             ))}
