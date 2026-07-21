@@ -117,3 +117,19 @@ export function requestQuoteOnWhatsapp(productName: string) {
   const url = buildWhatsappUrl(message);
   window.open(url, "_blank");
 }
+
+export function generateGeneralContactMessage() {
+  return [
+    "💬 *ORÇAMENTO / DÚVIDA*",
+    "",
+    "Olá! Gostaria de solicitar um orçamento / tirar uma dúvida sobre os produtos do Shopping Lander.",
+    "",
+    "Aguardo o retorno, obrigado!",
+  ].join("\n");
+}
+
+export function requestGeneralContactOnWhatsapp() {
+  const message = generateGeneralContactMessage();
+  const url = buildWhatsappUrl(message);
+  window.open(url, "_blank");
+}

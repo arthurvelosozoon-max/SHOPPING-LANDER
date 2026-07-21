@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Search, ShoppingCart, Heart, User, Menu, X } from "lucide-react";
+import { Search, ShoppingCart, Heart, Menu, X } from "lucide-react";
 import { Logo } from "./logo";
 import { useCart } from "@/components/cart/cart-provider";
 import { useFavorites } from "@/components/favorites/favorites-provider";
@@ -76,9 +76,6 @@ export function Header({ categories }: { categories: { name: string; slug: strin
                 {totalFavorites}
               </span>
             )}
-          </Link>
-          <Link href="/conta" className="hidden sm:block text-white/80 hover:text-sl-red">
-            <User size={22} />
           </Link>
           <button onClick={openCart} className="relative text-white/80 hover:text-sl-red">
             <ShoppingCart size={22} />

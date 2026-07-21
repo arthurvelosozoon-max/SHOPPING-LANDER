@@ -4,6 +4,7 @@ import { FavoritesProvider } from "@/components/favorites/favorites-provider";
 import { ToastProvider } from "@/components/ui/toast";
 import { Header } from "@/components/site/header";
 import { Footer } from "@/components/site/footer";
+import { FloatingWhatsappButton } from "@/components/site/floating-whatsapp-button";
 import { getCategories } from "@/lib/data";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -17,6 +18,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           <CartDrawer />
           <main className="flex-1">{children}</main>
           <Footer />
+          <FloatingWhatsappButton />
         </CartProvider>
       </FavoritesProvider>
     </ToastProvider>
