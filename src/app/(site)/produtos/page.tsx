@@ -2,27 +2,34 @@ import Link from "next/link";
 import { getAllProducts, getCategories, getBrands } from "@/lib/data";
 import { ProductCard } from "@/components/product/product-card";
 
-type SearchParams = Promise<{ categoria?: string; marca?: string; promo?: string }>;
+type SearchParams = Promise<{ categoria?: string; marca?: string; promo?: string; busca?: string }>;
 
 export default async function ProductsPage({ searchParams }: { searchParams: SearchParams }) {
-  const { categoria, marca, promo } = await searchParams;
+  const { categoria, marca, promo, busca } = await searchParams;
   const [products, categories, brands] = await Promise.all([
     getAllProducts(),
     getCategories(),
     getBrands(),
   ]);
 
+  const query = busca?.trim().toLowerCase();
+
   const filtered = products.filter((p) => {
     if (categoria && p.category.slug !== categoria) return false;
     if (marca && p.brand?.slug !== marca) return false;
     if (promo === "1" && !p.salePrice) return false;
+    if (query && !p.name.toLowerCase().includes(query)) return false;
     return true;
   });
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 lg:px-8">
       <h1 className="mb-8 text-3xl font-black text-white">
-        {promo === "1" ? "Ofertas do Dia" : "Todos os Produtos"}
+        {query
+          ? `Resultados para "${busca}"`
+          : promo === "1"
+            ? "Ofertas do Dia"
+            : "Todos os Produtos"}
       </h1>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[220px_1fr]">

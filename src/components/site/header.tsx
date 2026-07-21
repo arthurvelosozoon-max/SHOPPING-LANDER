@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Search, ShoppingCart, Heart, Menu, X } from "lucide-react";
 import { Logo } from "./logo";
@@ -11,12 +12,22 @@ const NAV_LINKS = [
   { label: "Produtos", href: "/produtos" },
   { label: "Promoções", href: "/produtos?promo=1" },
   { label: "Lançamentos", href: "/produtos?novo=1" },
+  { label: "Rastrear Pedido", href: "/rastrear" },
 ];
 
 export function Header({ categories }: { categories: { name: string; slug: string }[] }) {
+  const router = useRouter();
   const { totalItems, openCart } = useCart();
   const { totalItems: totalFavorites } = useFavorites();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const submitSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = search.trim();
+    router.push(trimmed ? `/produtos?busca=${encodeURIComponent(trimmed)}` : "/produtos");
+    setMobileOpen(false);
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-sl-black/95 backdrop-blur">
@@ -59,17 +70,22 @@ export function Header({ categories }: { categories: { name: string; slug: strin
           </div>
         </nav>
 
-        <div className="ml-auto hidden flex-1 max-w-md items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 lg:flex">
+        <form
+          onSubmit={submitSearch}
+          className="ml-auto hidden flex-1 max-w-md items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 lg:flex"
+        >
           <Search size={16} className="text-white/50" />
           <input
             type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar produtos..."
             className="w-full bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
           />
-        </div>
+        </form>
 
         <div className="ml-auto flex items-center gap-4 lg:ml-4">
-          <Link href="/favoritos" className="relative hidden sm:block text-white/80 hover:text-sl-red">
+          <Link href="/favoritos" className="relative text-white/80 hover:text-sl-red">
             <Heart size={22} />
             {totalFavorites > 0 && (
               <span className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-sl-red text-[10px] font-bold text-white">
@@ -90,6 +106,16 @@ export function Header({ categories }: { categories: { name: string; slug: strin
 
       {mobileOpen && (
         <nav className="border-t border-white/10 bg-sl-black-soft px-4 py-4 lg:hidden">
+          <form onSubmit={submitSearch} className="mb-4 flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2">
+            <Search size={16} className="text-white/50" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar produtos..."
+              className="w-full bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
+            />
+          </form>
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
