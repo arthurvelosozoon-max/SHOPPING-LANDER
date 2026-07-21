@@ -37,7 +37,6 @@ model User {
   password  String
   role      Role     @default(CUSTOMER)
   addresses Address[]
-  orders    Order[]
   favorites Favorite[]
   reviews   Review[]
   createdAt DateTime @default(now())
@@ -146,24 +145,34 @@ model Coupon {
 }
 
 model Order {
-  id         String      @id @default(cuid())
-  user       User        @relation(fields: [userId], references: [id])
-  userId     String
-  status     OrderStatus @default(PENDING)
-  items      OrderItem[]
-  coupon     Coupon?     @relation(fields: [couponId], references: [id])
-  couponId   String?
-  subtotal   Float
-  discount   Float       @default(0)
-  shipping   Float       @default(0)
-  total      Float
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id                String      @id @default(cuid())
+  orderNumber       String      @unique
+  customerName      String
+  customerPhone     String
+  customerCpf       String?
+  status            OrderStatus @default(PENDING)
+  items             OrderItem[]
+  coupon            Coupon?     @relation(fields: [couponId], references: [id])
+  couponId          String?
+  paymentMethod     String
+  notes             String?
+  subtotal          Float
+  discount          Float       @default(0)
+  shipping          Float       @default(0)
+  total             Float
+  carrier           String?
+  trackingCode      String?
+  trackingUrl       String?
+  shippedAt         DateTime?
+  estimatedDelivery DateTime?
+  shippingNotes     String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 }
 
 model OrderItem {
   id        String  @id @default(cuid())
-  order     Order   @relation(fields: [orderId], references: [id])
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId   String
   product   Product @relation(fields: [productId], references: [id])
   productId String

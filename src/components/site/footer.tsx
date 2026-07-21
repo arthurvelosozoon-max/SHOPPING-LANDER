@@ -22,19 +22,21 @@ export function Footer() {
           <ul className="space-y-2 text-sm text-white/50">
             <li><Link href="/sobre" className="hover:text-sl-red">Sobre nós</Link></li>
             <li><Link href="/privacidade" className="hover:text-sl-red">Política de privacidade</Link></li>
+            <li>
+              <Link
+                href="/admin/login"
+                className="flex items-center gap-1.5 hover:text-sl-red"
+              >
+                <ShieldCheck size={14} />
+                Login Admin
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
 
-      <div className="flex flex-col items-center gap-3 border-t border-white/10 py-4 text-center text-xs text-white/40 sm:flex-row sm:justify-between sm:px-4 lg:px-8">
-        <span>© {new Date().getFullYear()} Shopping Lander. Todos os direitos reservados.</span>
-        <Link
-          href="/admin/login"
-          className="flex items-center gap-1.5 text-white/30 transition hover:text-sl-red"
-        >
-          <ShieldCheck size={14} />
-          Login Admin
-        </Link>
+      <div className="border-t border-white/10 py-4 text-center text-xs text-white/40">
+        © {new Date().getFullYear()} Shopping Lander. Todos os direitos reservados.
       </div>
     </footer>
   );

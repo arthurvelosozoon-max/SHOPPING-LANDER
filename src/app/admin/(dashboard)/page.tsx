@@ -7,7 +7,7 @@ export default async function AdminDashboard() {
     prisma.product.count(),
     prisma.order.count(),
     prisma.product.findMany({ select: { stock: true, minStock: true } }),
-    prisma.order.findMany({ take: 5, orderBy: { createdAt: "desc" }, include: { user: true } }),
+    prisma.order.findMany({ take: 5, orderBy: { createdAt: "desc" } }),
   ]);
 
   const lowStockCount = allProducts.filter((p) => p.stock <= p.minStock).length;
@@ -52,7 +52,7 @@ export default async function AdminDashboard() {
             <tbody>
               {orders.map((o) => (
                 <tr key={o.id} className="border-b border-white/5 text-white/80">
-                  <td className="py-2">{o.user.name}</td>
+                  <td className="py-2">{o.customerName}</td>
                   <td className="py-2">{o.status}</td>
                   <td className="py-2 text-right">{formatCurrency(o.total)}</td>
                 </tr>
