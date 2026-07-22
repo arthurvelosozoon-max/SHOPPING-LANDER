@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Plus, Pencil } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, effectivePrice } from "@/lib/format";
 import { DeleteIconButton } from "@/components/admin/delete-icon-button";
 import { deleteProduct } from "./actions";
 
@@ -60,7 +60,7 @@ export default async function AdminProductsPage() {
                 </td>
                 <td className="p-4 text-white/50">{p.sku}</td>
                 <td className="p-4">{p.category.name}</td>
-                <td className="p-4">{formatCurrency(p.salePrice ?? p.price)}</td>
+                <td className="p-4">{formatCurrency(effectivePrice(p.price, p.salePrice))}</td>
                 <td className="p-4">
                   <span className={p.stock <= p.minStock ? "text-sl-red font-bold" : ""}>
                     {p.stock}

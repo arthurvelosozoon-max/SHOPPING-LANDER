@@ -21,7 +21,14 @@ function parseProductInput(formData: FormData) {
   const description = String(formData.get("description") ?? "").trim();
   const price = Number(formData.get("price"));
   const salePriceRaw = String(formData.get("salePrice") ?? "").trim();
-  const salePrice = salePriceRaw ? Number(salePriceRaw) : null;
+  const salePriceNumber = salePriceRaw ? Number(salePriceRaw) : null;
+  // A promotional price of 0 (or a typo like a negative number) is treated
+  // as "no promotion" rather than "free" — `?? ` fallbacks elsewhere in the
+  // app only skip null/undefined, so a stored 0 would render as R$ 0,00.
+  const salePrice =
+    salePriceNumber !== null && !Number.isNaN(salePriceNumber) && salePriceNumber > 0
+      ? salePriceNumber
+      : null;
   const stock = Number(formData.get("stock") ?? 0);
   const minStock = Number(formData.get("minStock") ?? 5);
   const weightRaw = String(formData.get("weight") ?? "").trim();
@@ -44,7 +51,7 @@ function parseProductInput(formData: FormData) {
       sku,
       description,
       price,
-      salePrice: salePrice !== null && !Number.isNaN(salePrice) ? salePrice : null,
+      salePrice,
       stock: Number.isNaN(stock) ? 0 : stock,
       minStock: Number.isNaN(minStock) ? 5 : minStock,
       weight: weight !== null && !Number.isNaN(weight) ? weight : null,

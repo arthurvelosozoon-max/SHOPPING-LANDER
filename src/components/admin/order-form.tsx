@@ -3,7 +3,7 @@
 import { useActionState, useMemo, useState } from "react";
 import Link from "next/link";
 import { Plus, Trash2 } from "lucide-react";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, effectivePrice } from "@/lib/format";
 import type { OrderFormState, OrderItemInput } from "@/app/admin/(dashboard)/pedidos/actions";
 
 type ProductOption = { id: string; name: string; price: number; salePrice: number | null };
@@ -54,7 +54,7 @@ export function OrderForm({ action, products, submitLabel, initialValues }: Prop
   const addItem = () => {
     const product = products.find((p) => p.id === selectedProductId);
     if (!product || quantity < 1) return;
-    const price = product.salePrice ?? product.price;
+    const price = effectivePrice(product.price, product.salePrice);
 
     setItems((prev) => {
       const existing = prev.find((i) => i.productId === product.id);
@@ -160,7 +160,7 @@ export function OrderForm({ action, products, submitLabel, initialValues }: Prop
             >
               {products.map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name} — {formatCurrency(p.salePrice ?? p.price)}
+                  {p.name} — {formatCurrency(effectivePrice(p.price, p.salePrice))}
                 </option>
               ))}
             </select>

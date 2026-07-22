@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingCart, Heart } from "lucide-react";
-import { formatCurrency, discountPercent } from "@/lib/format";
+import { formatCurrency, discountPercent, effectivePrice } from "@/lib/format";
 import { useCart } from "@/components/cart/cart-provider";
 import { useFavorites } from "@/components/favorites/favorites-provider";
 
@@ -20,7 +20,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   const { addItem } = useCart();
   const { isFavorite, toggleFavorite } = useFavorites();
   const discount = discountPercent(product.price, product.salePrice);
-  const finalPrice = product.salePrice ?? product.price;
+  const finalPrice = effectivePrice(product.price, product.salePrice);
   const favorited = isFavorite(product.id);
 
   return (

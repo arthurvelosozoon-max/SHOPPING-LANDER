@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import { getProductBySlug, getRelatedProducts } from "@/lib/data";
-import { formatCurrency, discountPercent } from "@/lib/format";
+import { formatCurrency, discountPercent, effectivePrice } from "@/lib/format";
 import { ProductCard } from "@/components/product/product-card";
 import { AddToCartButton } from "@/components/product/add-to-cart-button";
 import { RequestQuoteButton } from "@/components/product/request-quote-button";
@@ -17,7 +17,7 @@ export default async function ProductDetailPage({
 
   const related = await getRelatedProducts(product.categoryId, product.id);
   const discount = discountPercent(product.price, product.salePrice);
-  const finalPrice = product.salePrice ?? product.price;
+  const finalPrice = effectivePrice(product.price, product.salePrice);
   const avgRating =
     product.reviews.length > 0
       ? product.reviews.reduce((s, r) => s + r.rating, 0) / product.reviews.length
