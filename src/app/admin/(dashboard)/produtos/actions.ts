@@ -4,8 +4,34 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slugify";
+import { uploadProductImage } from "@/lib/supabase-storage";
 
 export type ProductFormState = { error?: string };
+
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml"];
+
+export async function uploadProductImageAction(
+  formData: FormData
+): Promise<{ url?: string; error?: string }> {
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) {
+    return { error: "Selecione um arquivo de imagem." };
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    return { error: "Imagem muito grande (máximo 5MB)." };
+  }
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    return { error: "Formato não suportado. Use PNG, JPG, WEBP, GIF ou SVG." };
+  }
+
+  try {
+    const url = await uploadProductImage(file);
+    return { url };
+  } catch {
+    return { error: "Falha ao enviar a imagem. Tente novamente." };
+  }
+}
 
 function parseImages(formData: FormData) {
   const raw = String(formData.get("images") ?? "");

@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import type { ProductFormState } from "@/app/admin/(dashboard)/produtos/actions";
+import { ProductImagesField } from "./product-images-field";
 
 type Category = { id: string; name: string };
 type Brand = { id: string; name: string };
@@ -156,16 +157,7 @@ export function ProductForm({ action, categories, brands, initialValues, submitL
         </Field>
       </div>
 
-      <Field label="Imagens (uma URL por linha)" htmlFor="images">
-        <textarea
-          id="images"
-          name="images"
-          rows={4}
-          placeholder="https://exemplo.com/imagem1.jpg"
-          defaultValue={initialValues?.images.join("\n")}
-          className="admin-input resize-none font-mono text-xs"
-        />
-      </Field>
+      <ProductImagesField initialImages={initialValues?.images ?? []} />
 
       <div className="flex gap-6">
         <label className="flex items-center gap-2 text-sm text-white/80">
