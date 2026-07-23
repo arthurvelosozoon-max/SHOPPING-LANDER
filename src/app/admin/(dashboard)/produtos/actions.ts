@@ -4,32 +4,45 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slugify";
-import { uploadProductImage } from "@/lib/supabase-storage";
+import { createSignedUploadUrl } from "@/lib/supabase-storage";
 
 export type ProductFormState = { error?: string };
 
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const MAX_IMAGE_BYTES = 25 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/gif", "image/svg+xml"];
+const ALLOWED_EXTENSIONS: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/gif": "gif",
+  "image/svg+xml": "svg",
+};
 
-export async function uploadProductImageAction(
-  formData: FormData
-): Promise<{ url?: string; error?: string }> {
-  const file = formData.get("file");
-  if (!(file instanceof File) || file.size === 0) {
+/**
+ * Returns a short-lived signed upload URL/token for the browser to upload
+ * the actual file bytes directly to Supabase Storage — the file itself
+ * never passes through this Server Action, so it isn't subject to the
+ * Netlify function payload limit.
+ */
+export async function requestProductImageUpload(
+  fileType: string,
+  fileSize: number
+): Promise<{ token?: string; path?: string; publicUrl?: string; error?: string }> {
+  if (fileSize <= 0) {
     return { error: "Selecione um arquivo de imagem." };
   }
-  if (file.size > MAX_IMAGE_BYTES) {
-    return { error: "Imagem muito grande (máximo 5MB)." };
+  if (fileSize > MAX_IMAGE_BYTES) {
+    return { error: "Imagem muito grande (máximo 25MB)." };
   }
-  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+  if (!ALLOWED_IMAGE_TYPES.includes(fileType)) {
     return { error: "Formato não suportado. Use PNG, JPG, WEBP, GIF ou SVG." };
   }
 
   try {
-    const url = await uploadProductImage(file);
-    return { url };
+    const { token, path, publicUrl } = await createSignedUploadUrl(ALLOWED_EXTENSIONS[fileType]);
+    return { token, path, publicUrl };
   } catch {
-    return { error: "Falha ao enviar a imagem. Tente novamente." };
+    return { error: "Falha ao preparar o envio da imagem. Tente novamente." };
   }
 }
 

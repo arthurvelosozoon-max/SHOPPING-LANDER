@@ -3,7 +3,9 @@
 import { useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import { Upload, Link as LinkIcon, X, Loader2, Plus } from "lucide-react";
-import { uploadProductImageAction } from "@/app/admin/(dashboard)/produtos/actions";
+import { requestProductImageUpload } from "@/app/admin/(dashboard)/produtos/actions";
+import { supabaseBrowser } from "@/lib/supabase-browser";
+import { PRODUCT_IMAGES_BUCKET } from "@/lib/supabase-storage";
 
 export function ProductImagesField({ initialImages = [] }: { initialImages?: string[] }) {
   const [images, setImages] = useState<string[]>(initialImages);
@@ -29,15 +31,22 @@ export function ProductImagesField({ initialImages = [] }: { initialImages?: str
     if (!file) return;
     setError(null);
 
-    const formData = new FormData();
-    formData.set("file", file);
-
     startUpload(async () => {
-      const result = await uploadProductImageAction(formData);
-      if (result.error) {
-        setError(result.error);
-      } else if (result.url) {
-        setImages((prev) => [...prev, result.url as string]);
+      const result = await requestProductImageUpload(file.type, file.size);
+      if (result.error || !result.token || !result.path || !result.publicUrl) {
+        setError(result.error ?? "Falha ao preparar o envio da imagem.");
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
+
+      const { error: uploadError } = await supabaseBrowser.storage
+        .from(PRODUCT_IMAGES_BUCKET)
+        .uploadToSignedUrl(result.path, result.token, file);
+
+      if (uploadError) {
+        setError("Falha ao enviar a imagem. Tente novamente.");
+      } else {
+        setImages((prev) => [...prev, result.publicUrl as string]);
       }
       if (fileInputRef.current) fileInputRef.current.value = "";
     });
@@ -110,6 +119,10 @@ export function ProductImagesField({ initialImages = [] }: { initialImages?: str
           </button>
         </div>
       </div>
+
+      <p className="mt-2 text-xs text-white/40">
+        Aceita imagens em alta resolução (até 25MB) — inclusive fotos 8K.
+      </p>
 
       {error && <p className="mt-2 text-sm text-sl-red">{error}</p>}
     </div>

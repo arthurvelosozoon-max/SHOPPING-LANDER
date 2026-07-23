@@ -1,26 +1,32 @@
 import { createClient } from "@supabase/supabase-js";
 
-const BUCKET = "product-images";
+export const PRODUCT_IMAGES_BUCKET = "product-images";
 
-function getClient() {
+function getServiceClient() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error("Supabase Storage is not configured");
   return createClient(url, key);
 }
 
-export async function uploadProductImage(file: File): Promise<string> {
-  const supabase = getClient();
+/**
+ * Creates a short-lived signed URL the browser can upload directly to,
+ * bypassing the Netlify function payload limit (~6MB) entirely — only this
+ * small signed-URL request goes through our server.
+ */
+export async function createSignedUploadUrl(extension: string) {
+  const supabase = getServiceClient();
+  const path = `${crypto.randomUUID()}.${extension}`;
 
-  const ext = file.name.split(".").pop() || "jpg";
-  const filename = `${crypto.randomUUID()}.${ext}`;
-
-  const { error } = await supabase.storage
-    .from(BUCKET)
-    .upload(filename, file, { contentType: file.type, upsert: false });
+  const { data, error } = await supabase.storage
+    .from(PRODUCT_IMAGES_BUCKET)
+    .createSignedUploadUrl(path);
 
   if (error) throw error;
 
-  const { data } = supabase.storage.from(BUCKET).getPublicUrl(filename);
-  return data.publicUrl;
+  const { data: publicUrlData } = supabase.storage
+    .from(PRODUCT_IMAGES_BUCKET)
+    .getPublicUrl(path);
+
+  return { token: data.token, path, publicUrl: publicUrlData.publicUrl };
 }
